@@ -19,7 +19,8 @@ const router = new Router({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: Dashboard
+      component: Dashboard,
+      meta: { requiresAuth: true }
     },
     {
       path: '/register',
@@ -32,6 +33,18 @@ const router = new Router({
       component: LoginUser
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const loggedIn = localStorage.getItem('user')
+  // if to route matches the route that has meta.requiresAuth in it
+  // 'some' iterate all the route and find them
+  if (to.matched.some(record => record.meta.requiresAuth) && !loggedIn) {
+    // if user's not logged in, redirect to home '/'
+    next('/')
+  }
+  // else, just continue the navigation
+  next()
 })
 
 export default router
